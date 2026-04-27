@@ -1,0 +1,217 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-04-27T12:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v9",
+  "resources": [
+    {
+      "_id": "wrk_google_play",
+      "_type": "workspace",
+      "name": "Google Play Process API",
+      "description": "REST API for catalog, install/purchase, cards and payment accounts"
+    },
+    {
+      "_id": "env_google_play",
+      "_type": "environment",
+      "parentId": "wrk_google_play",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8080",
+        "user_id": 1,
+        "card_id": 1,
+        "app_id": 2
+      }
+    },
+    {
+      "_id": "fld_catalog",
+      "_type": "request_group",
+      "parentId": "wrk_google_play",
+      "name": "Catalog"
+    },
+    {
+      "_id": "fld_accounts",
+      "_type": "request_group",
+      "parentId": "wrk_google_play",
+      "name": "Payment Accounts"
+    },
+    {
+      "_id": "fld_cards",
+      "_type": "request_group",
+      "parentId": "wrk_google_play",
+      "name": "Cards"
+    },
+    {
+      "_id": "fld_install",
+      "_type": "request_group",
+      "parentId": "wrk_google_play",
+      "name": "Installations and Purchases"
+    },
+    {
+      "_id": "req_catalog_search",
+      "_type": "request",
+      "parentId": "fld_catalog",
+      "name": "Search apps",
+      "method": "GET",
+      "url": "{{ base_url }}/api/catalog/apps?query=",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
+      "_id": "req_catalog_by_id",
+      "_type": "request",
+      "parentId": "fld_catalog",
+      "name": "Get app by id",
+      "method": "GET",
+      "url": "{{ base_url }}/api/catalog/apps/{{ app_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
+      "_id": "req_catalog_create",
+      "_type": "request",
+      "parentId": "fld_catalog",
+      "name": "Create app",
+      "method": "POST",
+      "url": "{{ base_url }}/api/catalog/apps",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"packageName\": \"com.example.newapp\",\n  \"title\": \"New Cool App\",\n  \"description\": \"Demo app from Insomnia\",\n  \"price\": 0.99\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "_id": "req_account_create",
+      "_type": "request",
+      "parentId": "fld_accounts",
+      "name": "Create payment account",
+      "method": "POST",
+      "url": "{{ base_url }}/api/payment-accounts/users",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"student@example.com\",\n  \"displayName\": \"Student\",\n  \"initialBalance\": 100.00\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "_id": "req_account_get",
+      "_type": "request",
+      "parentId": "fld_accounts",
+      "name": "Get payment account",
+      "method": "GET",
+      "url": "{{ base_url }}/api/payment-accounts/users/{{ user_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
+      "_id": "req_account_topup",
+      "_type": "request",
+      "parentId": "fld_accounts",
+      "name": "Top up payment account",
+      "method": "POST",
+      "url": "{{ base_url }}/api/payment-accounts/users/{{ user_id }}/top-up",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"amount\": 50.00\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "_id": "req_card_create",
+      "_type": "request",
+      "parentId": "fld_cards",
+      "name": "Create card",
+      "method": "POST",
+      "url": "{{ base_url }}/api/cards",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userId\": {{ user_id }},\n  \"cardNumber\": \"4111111111111111\",\n  \"holderName\": \"Student\",\n  \"expiryMonth\": 12,\n  \"expiryYear\": 2030\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "_id": "req_card_list",
+      "_type": "request",
+      "parentId": "fld_cards",
+      "name": "List cards",
+      "method": "GET",
+      "url": "{{ base_url }}/api/cards?userId={{ user_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
+      "_id": "req_card_delete",
+      "_type": "request",
+      "parentId": "fld_cards",
+      "name": "Delete card",
+      "method": "DELETE",
+      "url": "{{ base_url }}/api/cards/{{ card_id }}?userId={{ user_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
+      "_id": "req_install",
+      "_type": "request",
+      "parentId": "fld_install",
+      "name": "Install app (purchase if paid)",
+      "method": "POST",
+      "url": "{{ base_url }}/api/installations",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userId\": {{ user_id }},\n  \"appId\": {{ app_id }},\n  \"cardId\": {{ card_id }}\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "_id": "req_install_list",
+      "_type": "request",
+      "parentId": "fld_install",
+      "name": "List installations",
+      "method": "GET",
+      "url": "{{ base_url }}/api/installations?userId={{ user_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
+      "_id": "req_purchase_list",
+      "_type": "request",
+      "parentId": "fld_install",
+      "name": "List purchases",
+      "method": "GET",
+      "url": "{{ base_url }}/api/purchases?userId={{ user_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    }
+  ]
+}
