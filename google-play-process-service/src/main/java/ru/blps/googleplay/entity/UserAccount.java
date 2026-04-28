@@ -26,6 +26,9 @@ public class UserAccount {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal balance;
 
+    @Column(nullable = false)
+    private boolean active;
+
     public Long getId() {
         return id;
     }
@@ -56,5 +59,13 @@ public class UserAccount {
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

@@ -12,11 +12,11 @@ import ru.blps.googleplay.entity.UserAccount;
 import ru.blps.googleplay.enums.InstallationStatus;
 import ru.blps.googleplay.enums.PurchaseStatus;
 import ru.blps.googleplay.exception.BadRequestException;
+import ru.blps.googleplay.exception.NotFoundException;
 import ru.blps.googleplay.repository.InstallationRepository;
 import ru.blps.googleplay.repository.PurchaseRepository;
 import ru.blps.googleplay.repository.UserAccountRepository;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -85,17 +85,22 @@ public class InstallationService {
     }
 
     public List<InstallationResponse> listInstallations(Long userId) {
-        return installationRepository.findByUserIdOrderByInstalledAtDesc(userId)
-            .stream()
-            .map(this::toInstallationResponse)
-            .toList();
+        userAccountService.findEntityById(userId);
+        return installationRepository.findResponsesByUserIdOrderByInstalledAtDesc(userId);
     }
 
     public List<PurchaseResponse> listPurchases(Long userId) {
-        return purchaseRepository.findByUserIdOrderByCreatedAtDesc(userId)
-            .stream()
-            .map(this::toPurchaseResponse)
-            .toList();
+        userAccountService.findEntityById(userId);
+        return purchaseRepository.findResponsesByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+    @Transactional
+    public InstallationResponse uninstall(Long userId, Long installationId) {
+        userAccountService.findEntityById(userId);
+        Installation installation = installationRepository.findByIdAndUserId(installationId, userId)
+            .orElseThrow(() -> new NotFoundException("Установка не найдена"));
+        installation.setStatus(InstallationStatus.UNINSTALLED);
+        return toInstallationResponse(installationRepository.save(installation));
     }
 
     private InstallationResponse toInstallationResponse(Installation installation) {
@@ -109,14 +114,4 @@ public class InstallationService {
         return response;
     }
 
-    private PurchaseResponse toPurchaseResponse(Purchase purchase) {
-        PurchaseResponse response = new PurchaseResponse();
-        response.setId(purchase.getId());
-        response.setUserId(purchase.getUser().getId());
-        response.setAppId(purchase.getApp().getId());
-        response.setAmount(purchase.getAmount() == null ? BigDecimal.ZERO : purchase.getAmount());
-        response.setStatus(purchase.getStatus());
-        response.setCreatedAt(purchase.getCreatedAt());
-        return response;
-    }
 }

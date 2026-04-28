@@ -14,6 +14,23 @@ public class PurchaseResponse {
     private PurchaseStatus status;
     private OffsetDateTime createdAt;
 
+    public PurchaseResponse() {
+    }
+
+    public PurchaseResponse(Long id,
+                            Long userId,
+                            Long appId,
+                            BigDecimal amount,
+                            PurchaseStatus status,
+                            OffsetDateTime createdAt) {
+        this.id = id;
+        this.userId = userId;
+        this.appId = appId;
+        this.amount = amount == null ? BigDecimal.ZERO : amount;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
     public Long getId() {
         return id;
     }

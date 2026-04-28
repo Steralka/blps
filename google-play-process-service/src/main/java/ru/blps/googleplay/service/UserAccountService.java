@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.blps.googleplay.dto.TopUpRequest;
 import ru.blps.googleplay.dto.UserAccountCreateRequest;
 import ru.blps.googleplay.dto.UserAccountResponse;
+import ru.blps.googleplay.dto.UserAccountUpdateRequest;
 import ru.blps.googleplay.entity.UserAccount;
 import ru.blps.googleplay.exception.NotFoundException;
 import ru.blps.googleplay.repository.UserAccountRepository;
@@ -26,6 +27,7 @@ public class UserAccountService {
         account.setEmail(request.getEmail());
         account.setDisplayName(request.getDisplayName());
         account.setBalance(request.getInitialBalance());
+        account.setActive(true);
 
         return toResponse(userAccountRepository.save(account));
     }
@@ -41,8 +43,23 @@ public class UserAccountService {
         return toResponse(userAccountRepository.save(account));
     }
 
+    @Transactional
+    public UserAccountResponse update(Long userId, UserAccountUpdateRequest request) {
+        UserAccount account = findEntityById(userId);
+        account.setEmail(request.getEmail());
+        account.setDisplayName(request.getDisplayName());
+        return toResponse(userAccountRepository.save(account));
+    }
+
+    @Transactional
+    public void delete(Long userId) {
+        UserAccount account = findEntityById(userId);
+        account.setActive(false);
+        userAccountRepository.save(account);
+    }
+
     public UserAccount findEntityById(Long userId) {
-        return userAccountRepository.findById(Objects.requireNonNull(userId))
+        return userAccountRepository.findByIdAndActiveTrue(Objects.requireNonNull(userId))
             .orElseThrow(() -> new NotFoundException("Платежный аккаунт пользователя не найден"));
     }
 

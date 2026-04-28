@@ -1,7 +1,7 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2026-04-27T12:00:00.000Z",
+  "__export_date": "2026-04-28T13:30:00.000Z",
   "__export_source": "insomnia.desktop.app:v9",
   "resources": [
     {
@@ -19,7 +19,8 @@
         "base_url": "http://localhost:8080",
         "user_id": 1,
         "card_id": 1,
-        "app_id": 2
+        "app_id": 2,
+        "installation_id": 1
       }
     },
     {
@@ -45,6 +46,12 @@
       "_type": "request_group",
       "parentId": "wrk_google_play",
       "name": "Installations and Purchases"
+    },
+    {
+      "_id": "fld_swagger",
+      "_type": "request_group",
+      "parentId": "wrk_google_play",
+      "name": "Swagger"
     },
     {
       "_id": "req_catalog_search",
@@ -87,6 +94,35 @@
       ]
     },
     {
+      "_id": "req_catalog_update",
+      "_type": "request",
+      "parentId": "fld_catalog",
+      "name": "Update app",
+      "method": "PUT",
+      "url": "{{ base_url }}/api/catalog/apps/{{ app_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"packageName\": \"com.example.newapp\",\n  \"title\": \"Updated Cool App\",\n  \"description\": \"Updated demo app from Insomnia\",\n  \"price\": 1.49\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "_id": "req_catalog_delete",
+      "_type": "request",
+      "parentId": "fld_catalog",
+      "name": "Delete app",
+      "method": "DELETE",
+      "url": "{{ base_url }}/api/catalog/apps/{{ app_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
       "_id": "req_account_create",
       "_type": "request",
       "parentId": "fld_accounts",
@@ -116,6 +152,24 @@
       "headers": []
     },
     {
+      "_id": "req_account_update",
+      "_type": "request",
+      "parentId": "fld_accounts",
+      "name": "Update payment account",
+      "method": "PUT",
+      "url": "{{ base_url }}/api/payment-accounts/users/{{ user_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"student.updated@example.com\",\n  \"displayName\": \"Updated Student\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
       "_id": "req_account_topup",
       "_type": "request",
       "parentId": "fld_accounts",
@@ -132,6 +186,17 @@
           "value": "application/json"
         }
       ]
+    },
+    {
+      "_id": "req_account_delete",
+      "_type": "request",
+      "parentId": "fld_accounts",
+      "name": "Delete payment account",
+      "method": "DELETE",
+      "url": "{{ base_url }}/api/payment-accounts/users/{{ user_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
     },
     {
       "_id": "req_card_create",
@@ -161,6 +226,24 @@
       "body": {},
       "parameters": [],
       "headers": []
+    },
+    {
+      "_id": "req_card_update",
+      "_type": "request",
+      "parentId": "fld_cards",
+      "name": "Update card",
+      "method": "PUT",
+      "url": "{{ base_url }}/api/cards/{{ card_id }}?userId={{ user_id }}",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"holderName\": \"Updated Student\",\n  \"expiryMonth\": 11,\n  \"expiryYear\": 2031\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
     },
     {
       "_id": "req_card_delete",
@@ -203,12 +286,45 @@
       "headers": []
     },
     {
+      "_id": "req_install_delete",
+      "_type": "request",
+      "parentId": "fld_install",
+      "name": "Uninstall app",
+      "method": "DELETE",
+      "url": "{{ base_url }}/api/installations/{{ installation_id }}?userId={{ user_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
       "_id": "req_purchase_list",
       "_type": "request",
       "parentId": "fld_install",
       "name": "List purchases",
       "method": "GET",
       "url": "{{ base_url }}/api/purchases?userId={{ user_id }}",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
+      "_id": "req_openapi_json",
+      "_type": "request",
+      "parentId": "fld_swagger",
+      "name": "OpenAPI JSON",
+      "method": "GET",
+      "url": "{{ base_url }}/v3/api-docs",
+      "body": {},
+      "parameters": [],
+      "headers": []
+    },
+    {
+      "_id": "req_swagger_ui",
+      "_type": "request",
+      "parentId": "fld_swagger",
+      "name": "Swagger UI",
+      "method": "GET",
+      "url": "{{ base_url }}/swagger-ui.html",
       "body": {},
       "parameters": [],
       "headers": []

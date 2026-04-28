@@ -1,6 +1,7 @@
 package ru.blps.googleplay.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.blps.googleplay.dto.AppItemRequest;
 import ru.blps.googleplay.dto.AppItemResponse;
 import ru.blps.googleplay.entity.AppItem;
@@ -32,11 +33,10 @@ public class CatalogService {
     }
 
     public AppItemResponse getById(Long appId) {
-        AppItem app = appItemRepository.findById(Objects.requireNonNull(appId))
-            .orElseThrow(() -> new NotFoundException("Приложение не найдено"));
-        return toResponse(app);
+        return toResponse(findEntityById(appId));
     }
 
+    @Transactional
     public AppItemResponse create(AppItemRequest request) {
         AppItem app = new AppItem();
         app.setPackageName(request.getPackageName());
@@ -48,8 +48,25 @@ public class CatalogService {
         return toResponse(appItemRepository.save(app));
     }
 
+    @Transactional
+    public AppItemResponse update(Long appId, AppItemRequest request) {
+        AppItem app = findEntityById(appId);
+        app.setPackageName(request.getPackageName());
+        app.setTitle(request.getTitle());
+        app.setDescription(request.getDescription());
+        app.setPrice(request.getPrice());
+        return toResponse(appItemRepository.save(app));
+    }
+
+    @Transactional
+    public void delete(Long appId) {
+        AppItem app = findEntityById(appId);
+        app.setActive(false);
+        appItemRepository.save(app);
+    }
+
     public AppItem findEntityById(Long appId) {
-        return appItemRepository.findById(Objects.requireNonNull(appId))
+        return appItemRepository.findByIdAndActiveTrue(Objects.requireNonNull(appId))
             .orElseThrow(() -> new NotFoundException("Приложение не найдено"));
     }
 
