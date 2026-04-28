@@ -48,10 +48,7 @@ public class PaymentCardService {
 
     public List<PaymentCardResponse> listForUser(Long userId) {
         userAccountService.findEntityById(userId);
-        return paymentCardRepository.findByUserIdAndActiveTrue(userId)
-            .stream()
-            .map(this::toResponse)
-            .toList();
+        return paymentCardRepository.findResponsesByUserIdAndActiveTrue(userId);
     }
 
     @Transactional

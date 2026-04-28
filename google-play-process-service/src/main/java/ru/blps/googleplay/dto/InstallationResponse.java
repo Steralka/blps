@@ -13,6 +13,23 @@ public class InstallationResponse {
     private InstallationStatus status;
     private OffsetDateTime installedAt;
 
+    public InstallationResponse() {
+    }
+
+    public InstallationResponse(Long id,
+                                Long userId,
+                                Long appId,
+                                Long purchaseId,
+                                InstallationStatus status,
+                                OffsetDateTime installedAt) {
+        this.id = id;
+        this.userId = userId;
+        this.appId = appId;
+        this.purchaseId = purchaseId;
+        this.status = status;
+        this.installedAt = installedAt;
+    }
+
     public Long getId() {
         return id;
     }

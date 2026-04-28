@@ -9,6 +9,23 @@ public class PaymentCardResponse {
     private int expiryMonth;
     private int expiryYear;
 
+    public PaymentCardResponse() {
+    }
+
+    public PaymentCardResponse(Long id,
+                               Long userId,
+                               String maskedNumber,
+                               String holderName,
+                               int expiryMonth,
+                               int expiryYear) {
+        this.id = id;
+        this.userId = userId;
+        this.maskedNumber = maskedNumber;
+        this.holderName = holderName;
+        this.expiryMonth = expiryMonth;
+        this.expiryYear = expiryYear;
+    }
+
     public Long getId() {
         return id;
     }

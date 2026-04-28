@@ -17,7 +17,6 @@ import ru.blps.googleplay.repository.InstallationRepository;
 import ru.blps.googleplay.repository.PurchaseRepository;
 import ru.blps.googleplay.repository.UserAccountRepository;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -87,18 +86,12 @@ public class InstallationService {
 
     public List<InstallationResponse> listInstallations(Long userId) {
         userAccountService.findEntityById(userId);
-        return installationRepository.findByUserIdOrderByInstalledAtDesc(userId)
-            .stream()
-            .map(this::toInstallationResponse)
-            .toList();
+        return installationRepository.findResponsesByUserIdOrderByInstalledAtDesc(userId);
     }
 
     public List<PurchaseResponse> listPurchases(Long userId) {
         userAccountService.findEntityById(userId);
-        return purchaseRepository.findByUserIdOrderByCreatedAtDesc(userId)
-            .stream()
-            .map(this::toPurchaseResponse)
-            .toList();
+        return purchaseRepository.findResponsesByUserIdOrderByCreatedAtDesc(userId);
     }
 
     @Transactional
@@ -121,14 +114,4 @@ public class InstallationService {
         return response;
     }
 
-    private PurchaseResponse toPurchaseResponse(Purchase purchase) {
-        PurchaseResponse response = new PurchaseResponse();
-        response.setId(purchase.getId());
-        response.setUserId(purchase.getUser().getId());
-        response.setAppId(purchase.getApp().getId());
-        response.setAmount(purchase.getAmount() == null ? BigDecimal.ZERO : purchase.getAmount());
-        response.setStatus(purchase.getStatus());
-        response.setCreatedAt(purchase.getCreatedAt());
-        return response;
-    }
 }

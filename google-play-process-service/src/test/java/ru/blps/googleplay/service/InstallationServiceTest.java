@@ -7,12 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.blps.googleplay.dto.InstallationRequest;
 import ru.blps.googleplay.dto.InstallationResponse;
+import ru.blps.googleplay.dto.PurchaseResponse;
 import ru.blps.googleplay.entity.AppItem;
 import ru.blps.googleplay.entity.Installation;
 import ru.blps.googleplay.entity.PaymentCard;
 import ru.blps.googleplay.entity.Purchase;
 import ru.blps.googleplay.entity.UserAccount;
 import ru.blps.googleplay.enums.InstallationStatus;
+import ru.blps.googleplay.enums.PurchaseStatus;
 import ru.blps.googleplay.repository.AppItemRepository;
 import ru.blps.googleplay.repository.InstallationRepository;
 import ru.blps.googleplay.repository.PaymentCardRepository;
@@ -21,6 +23,7 @@ import ru.blps.googleplay.repository.UserAccountRepository;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,6 +64,58 @@ class InstallationServiceTest {
             installationRepository,
             userAccountRepository
         );
+    }
+
+    @Test
+    void listInstallationsUsesProjectedResponses() {
+        UserAccount user = user(1L, "10.00");
+        OffsetDateTime installedAt = OffsetDateTime.now();
+        InstallationResponse installation = new InstallationResponse(
+            9L,
+            1L,
+            2L,
+            7L,
+            InstallationStatus.INSTALLED,
+            installedAt
+        );
+
+        when(userAccountRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(user));
+        when(installationRepository.findResponsesByUserIdOrderByInstalledAtDesc(1L)).thenReturn(List.of(installation));
+
+        List<InstallationResponse> response = installationService.listInstallations(1L);
+
+        assertEquals(1, response.size());
+        assertEquals(9L, response.get(0).getId());
+        assertEquals(2L, response.get(0).getAppId());
+        assertEquals(7L, response.get(0).getPurchaseId());
+        assertEquals(installedAt, response.get(0).getInstalledAt());
+        verify(installationRepository).findResponsesByUserIdOrderByInstalledAtDesc(1L);
+    }
+
+    @Test
+    void listPurchasesUsesProjectedResponses() {
+        UserAccount user = user(1L, "10.00");
+        OffsetDateTime createdAt = OffsetDateTime.now();
+        PurchaseResponse purchase = new PurchaseResponse(
+            7L,
+            1L,
+            2L,
+            new BigDecimal("4.99"),
+            PurchaseStatus.PAID,
+            createdAt
+        );
+
+        when(userAccountRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(user));
+        when(purchaseRepository.findResponsesByUserIdOrderByCreatedAtDesc(1L)).thenReturn(List.of(purchase));
+
+        List<PurchaseResponse> response = installationService.listPurchases(1L);
+
+        assertEquals(1, response.size());
+        assertEquals(7L, response.get(0).getId());
+        assertEquals(2L, response.get(0).getAppId());
+        assertEquals(new BigDecimal("4.99"), response.get(0).getAmount());
+        assertEquals(createdAt, response.get(0).getCreatedAt());
+        verify(purchaseRepository).findResponsesByUserIdOrderByCreatedAtDesc(1L);
     }
 
     @Test

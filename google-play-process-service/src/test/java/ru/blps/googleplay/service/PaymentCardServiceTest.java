@@ -14,6 +14,7 @@ import ru.blps.googleplay.repository.PaymentCardRepository;
 import ru.blps.googleplay.repository.UserAccountRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,6 +39,23 @@ class PaymentCardServiceTest {
     void setUp() {
         UserAccountService userAccountService = new UserAccountService(userAccountRepository);
         paymentCardService = new PaymentCardService(paymentCardRepository, userAccountService);
+    }
+
+    @Test
+    void listForUserUsesProjectedResponses() {
+        UserAccount user = user(1L);
+        PaymentCardResponse card = new PaymentCardResponse(2L, 1L, "**** **** **** 1111", "Student", 12, 2030);
+
+        when(userAccountRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(user));
+        when(paymentCardRepository.findResponsesByUserIdAndActiveTrue(1L)).thenReturn(List.of(card));
+
+        List<PaymentCardResponse> response = paymentCardService.listForUser(1L);
+
+        assertEquals(1, response.size());
+        assertEquals(2L, response.get(0).getId());
+        assertEquals(1L, response.get(0).getUserId());
+        assertEquals("**** **** **** 1111", response.get(0).getMaskedNumber());
+        verify(paymentCardRepository).findResponsesByUserIdAndActiveTrue(1L);
     }
 
     @Test
