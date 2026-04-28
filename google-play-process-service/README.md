@@ -32,6 +32,22 @@ docker compose up --build
 
 Сервис поднимется на `http://localhost:8080`, PostgreSQL - на `localhost:5432`.
 
+Если порт `8080` уже занят, можно запустить на другом порту хоста:
+
+```bash
+APP_HOST_PORT=8081 docker compose up --build
+```
+
+Тогда сервис будет доступен по `http://localhost:8081`.
+
+Если занят и `5432`, задайте оба порта:
+
+```bash
+APP_HOST_PORT=8081 POSTGRES_HOST_PORT=5433 docker compose up --build
+```
+
+Тогда PostgreSQL будет доступен на `localhost:5433`.
+
 ### Локально
 
 1. Поднять PostgreSQL:
