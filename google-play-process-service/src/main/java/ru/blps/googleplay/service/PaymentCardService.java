@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.blps.googleplay.dto.PaymentCardCreateRequest;
 import ru.blps.googleplay.dto.PaymentCardResponse;
+import ru.blps.googleplay.dto.PaymentCardUpdateRequest;
 import ru.blps.googleplay.entity.PaymentCard;
 import ru.blps.googleplay.entity.UserAccount;
 import ru.blps.googleplay.exception.BadRequestException;
@@ -46,6 +47,7 @@ public class PaymentCardService {
     }
 
     public List<PaymentCardResponse> listForUser(Long userId) {
+        userAccountService.findEntityById(userId);
         return paymentCardRepository.findByUserIdAndActiveTrue(userId)
             .stream()
             .map(this::toResponse)
@@ -53,7 +55,19 @@ public class PaymentCardService {
     }
 
     @Transactional
+    public PaymentCardResponse updateForUser(Long userId, Long cardId, PaymentCardUpdateRequest request) {
+        userAccountService.findEntityById(userId);
+        PaymentCard card = paymentCardRepository.findByIdAndUserIdAndActiveTrue(cardId, userId)
+            .orElseThrow(() -> new NotFoundException("Карта не найдена"));
+        card.setHolderName(request.getHolderName());
+        card.setExpiryMonth(request.getExpiryMonth());
+        card.setExpiryYear(request.getExpiryYear());
+        return toResponse(paymentCardRepository.save(card));
+    }
+
+    @Transactional
     public void deleteForUser(Long userId, Long cardId) {
+        userAccountService.findEntityById(userId);
         PaymentCard card = paymentCardRepository.findByIdAndUserIdAndActiveTrue(cardId, userId)
             .orElseThrow(() -> new NotFoundException("Карта не найдена"));
         card.setActive(false);

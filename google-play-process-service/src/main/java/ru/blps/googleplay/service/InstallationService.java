@@ -12,6 +12,7 @@ import ru.blps.googleplay.entity.UserAccount;
 import ru.blps.googleplay.enums.InstallationStatus;
 import ru.blps.googleplay.enums.PurchaseStatus;
 import ru.blps.googleplay.exception.BadRequestException;
+import ru.blps.googleplay.exception.NotFoundException;
 import ru.blps.googleplay.repository.InstallationRepository;
 import ru.blps.googleplay.repository.PurchaseRepository;
 import ru.blps.googleplay.repository.UserAccountRepository;
@@ -85,6 +86,7 @@ public class InstallationService {
     }
 
     public List<InstallationResponse> listInstallations(Long userId) {
+        userAccountService.findEntityById(userId);
         return installationRepository.findByUserIdOrderByInstalledAtDesc(userId)
             .stream()
             .map(this::toInstallationResponse)
@@ -92,10 +94,20 @@ public class InstallationService {
     }
 
     public List<PurchaseResponse> listPurchases(Long userId) {
+        userAccountService.findEntityById(userId);
         return purchaseRepository.findByUserIdOrderByCreatedAtDesc(userId)
             .stream()
             .map(this::toPurchaseResponse)
             .toList();
+    }
+
+    @Transactional
+    public InstallationResponse uninstall(Long userId, Long installationId) {
+        userAccountService.findEntityById(userId);
+        Installation installation = installationRepository.findByIdAndUserId(installationId, userId)
+            .orElseThrow(() -> new NotFoundException("Установка не найдена"));
+        installation.setStatus(InstallationStatus.UNINSTALLED);
+        return toInstallationResponse(installationRepository.save(installation));
     }
 
     private InstallationResponse toInstallationResponse(Installation installation) {

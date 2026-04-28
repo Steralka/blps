@@ -15,13 +15,29 @@ Spring Boot приложение для реализации бизнес-про
 - Spring Web, Spring Data JPA, Bean Validation
 - PostgreSQL
 - Flyway
+- Springdoc OpenAPI / Swagger UI
+- Docker, Docker Compose
+
+## BPMN
+
+Модель бизнес-процесса BPMN 2.0 находится в `src/main/resources/bpmn/google-play-process.bpmn`.
 
 ## Запуск
+
+### Через Docker Compose
+
+```bash
+docker compose up --build
+```
+
+Сервис поднимется на `http://localhost:8080`, PostgreSQL - на `localhost:5432`.
+
+### Локально
 
 1. Поднять PostgreSQL:
 
 ```bash
-docker compose up -d
+docker compose up -d postgres
 ```
 
 2. Запустить приложение:
@@ -32,6 +48,11 @@ mvn spring-boot:run
 
 Сервис поднимется на `http://localhost:8080`.
 
+## Swagger
+
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
 ## Основные REST API
 
 ### Каталог
@@ -39,23 +60,29 @@ mvn spring-boot:run
 - `GET /api/catalog/apps?query=&minPrice=&maxPrice` - поиск приложений.
 - `GET /api/catalog/apps/{appId}` - карточка приложения.
 - `POST /api/catalog/apps` - создание приложения (для тестовых данных).
+- `PUT /api/catalog/apps/{appId}` - обновление приложения.
+- `DELETE /api/catalog/apps/{appId}` - удаление приложения из активного каталога.
 
 ### Платёжный аккаунт
 
 - `POST /api/payment-accounts/users` - создать аккаунт.
 - `GET /api/payment-accounts/users/{userId}` - получить аккаунт.
+- `PUT /api/payment-accounts/users/{userId}` - обновить email и имя.
+- `DELETE /api/payment-accounts/users/{userId}` - деактивировать аккаунт.
 - `POST /api/payment-accounts/users/{userId}/top-up` - пополнить баланс.
 
 ### Карты
 
 - `POST /api/cards` - добавить карту.
 - `GET /api/cards?userId={userId}` - список активных карт.
+- `PUT /api/cards/{cardId}?userId={userId}` - обновить держателя и срок действия карты.
 - `DELETE /api/cards/{cardId}?userId={userId}` - удалить (деактивировать) карту.
 
 ### Установка/покупка
 
 - `POST /api/installations` - установка приложения (и покупка для платного).
 - `GET /api/installations?userId={userId}` - история установок.
+- `DELETE /api/installations/{installationId}?userId={userId}` - удалить установленное приложение.
 - `GET /api/purchases?userId={userId}` - история покупок.
 
 ## Тестирование API
@@ -84,3 +111,13 @@ mvn spring-boot:run
   "cardId": 1
 }
 ```
+
+## Подготовка к Helios
+
+На сервере с Docker достаточно скопировать проект, перейти в каталог `google-play-process-service` и выполнить:
+
+```bash
+docker compose up --build -d
+```
+
+При необходимости переопределить параметры базы можно через переменные `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `SERVER_PORT` в `docker-compose.yml` или окружении сервера.
