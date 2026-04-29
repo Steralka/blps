@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 
 public class UserAccountCreateRequest {
 
-    @Email
-    @NotBlank
+    @Email(message = "Некорректный email")
+    @NotBlank(message = "Email обязателен")
     private String email;
 
     @NotBlank

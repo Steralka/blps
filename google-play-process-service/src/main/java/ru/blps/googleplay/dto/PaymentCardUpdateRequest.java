@@ -13,7 +13,7 @@ public class PaymentCardUpdateRequest {
     @Max(12)
     private int expiryMonth;
 
-    @Min(2024)
+    @Min(2026)
     private int expiryYear;
 
     public String getHolderName() {

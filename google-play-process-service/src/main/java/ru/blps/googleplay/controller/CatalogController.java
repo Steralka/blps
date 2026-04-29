@@ -31,7 +31,7 @@ public class CatalogController {
         this.catalogService = catalogService;
     }
 
-    @Operation(summary = "Поиск активных приложений")
+    @Operation(summary = "Поиск приложений")
     @GetMapping
     public List<AppItemResponse> search(@RequestParam(required = false) String query,
                                         @RequestParam(required = false) BigDecimal minPrice,

@@ -30,8 +30,12 @@ public class PaymentCardService {
         UserAccount user = userAccountService.findEntityById(request.getUserId());
 
         String digits = request.getCardNumber().replaceAll("\\s", "");
-        if (digits.length() < 12) {
+        if (digits.length() != 12 && isLuhnValid(digits) == false) {
             throw new BadRequestException("Некорректный номер карты");
+        }
+
+        if (!request.getCvv().matches("\\d{3}")) {
+            throw new BadRequestException("Некорректный CVV");
         }
 
         PaymentCard card = new PaymentCard();
@@ -81,6 +85,7 @@ public class PaymentCardService {
         response.setId(card.getId());
         response.setUserId(card.getUser().getId());
         response.setMaskedNumber(card.getMaskedNumber());
+        response.setCvv("***");
         response.setHolderName(card.getHolderName());
         response.setExpiryMonth(card.getExpiryMonth());
         response.setExpiryYear(card.getExpiryYear());
@@ -90,5 +95,24 @@ public class PaymentCardService {
     private String maskCardNumber(String cardNumber) {
         String last4 = cardNumber.substring(cardNumber.length() - 4);
         return "**** **** **** " + last4;
+    }
+
+    private boolean isLuhnValid(String digits) {
+        int sum = 0;
+        boolean doubleDigit = false;
+
+        for (int i = digits.length() - 1; i >= 0; i--) {
+            int n = digits.charAt(i) - '0';
+            if (doubleDigit) {
+                n *= 2;
+                if (n > 9) {
+                    n -= 9;
+                }
+            }
+            sum += n;
+            doubleDigit = !doubleDigit;
+        }
+
+        return sum % 10 == 0;
     }
 }

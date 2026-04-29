@@ -44,7 +44,7 @@ class PaymentCardServiceTest {
     @Test
     void listForUserUsesProjectedResponses() {
         UserAccount user = user(1L);
-        PaymentCardResponse card = new PaymentCardResponse(2L, 1L, "**** **** **** 1111", "Student", 12, 2030);
+        PaymentCardResponse card = new PaymentCardResponse(2L, 1L, "**** **** **** 1111", "***", "Student", 12, 2030);
 
         when(userAccountRepository.findByIdAndActiveTrue(1L)).thenReturn(Optional.of(user));
         when(paymentCardRepository.findResponsesByUserIdAndActiveTrue(1L)).thenReturn(List.of(card));

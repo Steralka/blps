@@ -17,6 +17,7 @@ public interface PaymentCardRepository extends JpaRepository<PaymentCard, Long> 
             c.id,
             c.user.id,
             c.maskedNumber,
+            '***',
             c.holderName,
             c.expiryMonth,
             c.expiryYear

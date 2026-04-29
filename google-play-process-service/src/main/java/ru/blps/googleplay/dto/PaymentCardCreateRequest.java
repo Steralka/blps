@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public class PaymentCardCreateRequest {
 
@@ -16,11 +17,15 @@ public class PaymentCardCreateRequest {
     @NotBlank
     private String holderName;
 
+    @NotBlank
+    @Pattern(regexp = "\\d{3}", message = "CVV должен состоять из 3 цифр")
+    private String cvv;
+
     @Min(1)
     @Max(12)
     private int expiryMonth;
 
-    @Min(2024)
+    @Min(2026)
     private int expiryYear;
 
     public Long getUserId() {
@@ -45,6 +50,14 @@ public class PaymentCardCreateRequest {
 
     public void setHolderName(String holderName) {
         this.holderName = holderName;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
     }
 
     public int getExpiryMonth() {

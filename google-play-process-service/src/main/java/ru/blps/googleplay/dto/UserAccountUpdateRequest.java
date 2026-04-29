@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public class UserAccountUpdateRequest {
 
-    @Email
-    @NotBlank
+    @Email(message = "Некорректный email")
+    @NotBlank(message = "Email обязателен")
     private String email;
 
     @NotBlank

@@ -5,6 +5,7 @@ public class PaymentCardResponse {
     private Long id;
     private Long userId;
     private String maskedNumber;
+    private String cvv;
     private String holderName;
     private int expiryMonth;
     private int expiryYear;
@@ -15,12 +16,14 @@ public class PaymentCardResponse {
     public PaymentCardResponse(Long id,
                                Long userId,
                                String maskedNumber,
+                               String cvv,
                                String holderName,
                                int expiryMonth,
                                int expiryYear) {
         this.id = id;
         this.userId = userId;
         this.maskedNumber = maskedNumber;
+        this.cvv = cvv;
         this.holderName = holderName;
         this.expiryMonth = expiryMonth;
         this.expiryYear = expiryYear;
@@ -48,6 +51,14 @@ public class PaymentCardResponse {
 
     public void setMaskedNumber(String maskedNumber) {
         this.maskedNumber = maskedNumber;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
     }
 
     public String getHolderName() {
