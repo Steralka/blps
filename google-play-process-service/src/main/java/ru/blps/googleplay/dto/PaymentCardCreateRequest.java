@@ -11,13 +11,13 @@ public class PaymentCardCreateRequest {
     @NotNull
     private Long userId;
 
-    @NotBlank
+    @NotBlank(message = "Отсутствует номер карты")
     private String cardNumber;
 
-    @NotBlank
+    @NotBlank(message = "Отсутствует держателя карты")
     private String holderName;
 
-    @NotBlank
+    @NotBlank(message = "Отсутствует CVV")
     @Pattern(regexp = "\\d{3}", message = "CVV должен состоять из 3 цифр")
     private String cvv;
 

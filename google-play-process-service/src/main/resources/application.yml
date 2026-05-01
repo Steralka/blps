@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:google_play_db}
-    username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:studs}
+    username: ${DB_USER:s412981}
+    password: ${DB_PASSWORD:jXUY2dJZrDSNFSok}
   jpa:
     hibernate:
       ddl-auto: validate

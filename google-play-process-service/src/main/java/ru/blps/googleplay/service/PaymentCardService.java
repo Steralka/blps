@@ -30,7 +30,7 @@ public class PaymentCardService {
         UserAccount user = userAccountService.findEntityById(request.getUserId());
 
         String digits = request.getCardNumber().replaceAll("\\s", "");
-        if (digits.length() != 12 && isLuhnValid(digits) == false) {
+        if (digits.length() != 16 || isLuhnValid(digits) == false) {
             throw new BadRequestException("Некорректный номер карты");
         }
 

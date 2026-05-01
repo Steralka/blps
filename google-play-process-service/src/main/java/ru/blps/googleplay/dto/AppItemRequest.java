@@ -8,13 +8,13 @@ import java.math.BigDecimal;
 
 public class AppItemRequest {
 
-    @NotBlank
+    @NotBlank(message = "Отсутствует название пакета")
     private String packageName;
 
-    @NotBlank
+    @NotBlank(message = "Отсутствует название приложения")
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "Отсутствует описание приожения")
     private String description;
 
     @NotNull
