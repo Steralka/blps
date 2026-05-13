@@ -6,7 +6,7 @@
 2. Логин: `POST /api/auth/login`
    - тело: `{"username":"admin","password":"admin123"}`
    - ответ: `{"token":"<jwt>"}`
-3. Дальше передавайте JWT: `Authorization: Bearer <jwt>`
+3. JWT: `Authorization: Bearer <jwt>`
 
 ## Роли и привилегии (модель доступа)
 
