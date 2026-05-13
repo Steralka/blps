@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+  <!--
+    Пароли хранятся в демонстрационном виде ({noop}).
+    Для эксплуатации замените на {bcrypt}... и обновите XmlJaasLoginModule (PasswordEncoder).
+  -->
+  <user username="admin" password="{noop}admin123" roles="ROLE_ADMIN"/>
+  <user username="student" password="{noop}student123" roles="ROLE_USER"/>
+</users>

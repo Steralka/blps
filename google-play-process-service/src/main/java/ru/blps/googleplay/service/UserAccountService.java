@@ -1,7 +1,7 @@
 package ru.blps.googleplay.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.blps.googleplay.dto.TopUpRequest;
 import ru.blps.googleplay.dto.UserAccountCreateRequest;
 import ru.blps.googleplay.dto.UserAccountResponse;
@@ -9,6 +9,7 @@ import ru.blps.googleplay.dto.UserAccountUpdateRequest;
 import ru.blps.googleplay.entity.UserAccount;
 import ru.blps.googleplay.exception.NotFoundException;
 import ru.blps.googleplay.repository.UserAccountRepository;
+import ru.blps.googleplay.tx.TxExecutor;
 
 import java.util.Objects;
 
@@ -16,46 +17,57 @@ import java.util.Objects;
 public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
+    private final TxExecutor tx;
 
-    public UserAccountService(UserAccountRepository userAccountRepository) {
+    public UserAccountService(UserAccountRepository userAccountRepository, TxExecutor tx) {
         this.userAccountRepository = userAccountRepository;
+        this.tx = tx;
     }
 
-    @Transactional
+    @PreAuthorize("@accessPolicy.canCreateAccount(#request.email)")
     public UserAccountResponse create(UserAccountCreateRequest request) {
-        UserAccount account = new UserAccount();
-        account.setEmail(request.getEmail());
-        account.setDisplayName(request.getDisplayName());
-        account.setBalance(request.getInitialBalance());
-        account.setActive(true);
+        return tx.required(() -> {
+            UserAccount account = new UserAccount();
+            account.setEmail(request.getEmail());
+            account.setDisplayName(request.getDisplayName());
+            account.setBalance(request.getInitialBalance());
+            account.setActive(true);
 
-        return toResponse(userAccountRepository.save(account));
+            return toResponse(userAccountRepository.save(account));
+        });
     }
 
+    @PreAuthorize("@accessPolicy.canReadAccount(#userId)")
     public UserAccountResponse getById(Long userId) {
         return toResponse(findEntityById(userId));
     }
 
-    @Transactional
+    @PreAuthorize("@accessPolicy.canWriteAccount(#userId)")
     public UserAccountResponse topUp(Long userId, TopUpRequest request) {
-        UserAccount account = findEntityById(userId);
-        account.setBalance(account.getBalance().add(request.getAmount()));
-        return toResponse(userAccountRepository.save(account));
+        return tx.required(() -> {
+            UserAccount account = findEntityById(userId);
+            account.setBalance(account.getBalance().add(request.getAmount()));
+            return toResponse(userAccountRepository.save(account));
+        });
     }
 
-    @Transactional
+    @PreAuthorize("@accessPolicy.canWriteAccount(#userId)")
     public UserAccountResponse update(Long userId, UserAccountUpdateRequest request) {
-        UserAccount account = findEntityById(userId);
-        account.setEmail(request.getEmail());
-        account.setDisplayName(request.getDisplayName());
-        return toResponse(userAccountRepository.save(account));
+        return tx.required(() -> {
+            UserAccount account = findEntityById(userId);
+            account.setEmail(request.getEmail());
+            account.setDisplayName(request.getDisplayName());
+            return toResponse(userAccountRepository.save(account));
+        });
     }
 
-    @Transactional
+    @PreAuthorize("@accessPolicy.canWriteAccount(#userId)")
     public void delete(Long userId) {
-        UserAccount account = findEntityById(userId);
-        account.setActive(false);
-        userAccountRepository.save(account);
+        tx.required(() -> {
+            UserAccount account = findEntityById(userId);
+            account.setActive(false);
+            userAccountRepository.save(account);
+        });
     }
 
     public UserAccount findEntityById(Long userId) {

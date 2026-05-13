@@ -12,6 +12,9 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  jta:
+    enabled: true
+    transaction-manager-id: ${JTA_TM_ID:google-play-process-service}
 
 server:
   port: ${SERVER_PORT:8080}
@@ -19,3 +22,10 @@ server:
 logging:
   level:
     org.hibernate.SQL: info
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:change-me-in-prod-please-change-me}
+      ttl-seconds: ${JWT_TTL_SECONDS:3600}
+    users-xml: ${USERS_XML:classpath:security/users.xml}

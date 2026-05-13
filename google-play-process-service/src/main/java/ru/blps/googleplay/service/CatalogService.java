@@ -1,12 +1,14 @@
 package ru.blps.googleplay.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 import ru.blps.googleplay.dto.AppItemRequest;
 import ru.blps.googleplay.dto.AppItemResponse;
 import ru.blps.googleplay.entity.AppItem;
 import ru.blps.googleplay.exception.NotFoundException;
 import ru.blps.googleplay.repository.AppItemRepository;
+import ru.blps.googleplay.security.Privilege;
+import ru.blps.googleplay.tx.TxExecutor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,11 +18,14 @@ import java.util.Objects;
 public class CatalogService {
 
     private final AppItemRepository appItemRepository;
+    private final TxExecutor tx;
 
-    public CatalogService(AppItemRepository appItemRepository) {
+    public CatalogService(AppItemRepository appItemRepository, TxExecutor tx) {
         this.appItemRepository = appItemRepository;
+        this.tx = tx;
     }
 
+    @PreAuthorize("hasAuthority(T(ru.blps.googleplay.security.Privilege).CATALOG_READ)")
     public List<AppItemResponse> search(String query, BigDecimal minPrice, BigDecimal maxPrice) {
         String safeQuery = query == null ? "" : query;
         BigDecimal safeMin = minPrice == null ? BigDecimal.ZERO : minPrice;
@@ -32,37 +37,44 @@ public class CatalogService {
             .toList();
     }
 
+    @PreAuthorize("hasAuthority(T(ru.blps.googleplay.security.Privilege).CATALOG_READ)")
     public AppItemResponse getById(Long appId) {
         return toResponse(findEntityById(appId));
     }
 
-    @Transactional
+    @PreAuthorize("hasAuthority(T(ru.blps.googleplay.security.Privilege).CATALOG_WRITE)")
     public AppItemResponse create(AppItemRequest request) {
-        AppItem app = new AppItem();
-        app.setPackageName(request.getPackageName());
-        app.setTitle(request.getTitle());
-        app.setDescription(request.getDescription());
-        app.setPrice(request.getPrice());
-        app.setActive(true);
+        return tx.required(() -> {
+            AppItem app = new AppItem();
+            app.setPackageName(request.getPackageName());
+            app.setTitle(request.getTitle());
+            app.setDescription(request.getDescription());
+            app.setPrice(request.getPrice());
+            app.setActive(true);
 
-        return toResponse(appItemRepository.save(app));
+            return toResponse(appItemRepository.save(app));
+        });
     }
 
-    @Transactional
+    @PreAuthorize("hasAuthority(T(ru.blps.googleplay.security.Privilege).CATALOG_WRITE)")
     public AppItemResponse update(Long appId, AppItemRequest request) {
-        AppItem app = findEntityById(appId);
-        app.setPackageName(request.getPackageName());
-        app.setTitle(request.getTitle());
-        app.setDescription(request.getDescription());
-        app.setPrice(request.getPrice());
-        return toResponse(appItemRepository.save(app));
+        return tx.required(() -> {
+            AppItem app = findEntityById(appId);
+            app.setPackageName(request.getPackageName());
+            app.setTitle(request.getTitle());
+            app.setDescription(request.getDescription());
+            app.setPrice(request.getPrice());
+            return toResponse(appItemRepository.save(app));
+        });
     }
 
-    @Transactional
+    @PreAuthorize("hasAuthority(T(ru.blps.googleplay.security.Privilege).CATALOG_WRITE)")
     public void delete(Long appId) {
-        AppItem app = findEntityById(appId);
-        app.setActive(false);
-        appItemRepository.save(app);
+        tx.required(() -> {
+            AppItem app = findEntityById(appId);
+            app.setActive(false);
+            appItemRepository.save(app);
+        });
     }
 
     public AppItem findEntityById(Long appId) {
