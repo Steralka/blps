@@ -20,17 +20,16 @@
 - `PRIV_CARD_MANAGE_SELF`, `PRIV_CARD_ADMIN`
 - `PRIV_INSTALL_SELF`, `PRIV_INSTALL_ADMIN`
 
-Связка ролей и привилегий задаётся в `src/main/java/ru/blps/googleplay/security/RolePrivileges.java`.
+Связка ролей и привилегий задаётся в `security/RolePrivileges.java`.
 
 Политика владения (для ролей без `*_ADMIN`):
 - операции с `userId` разрешены только если `UserAccount.email == username` из JWT.
 
 ## Транзакции (Spring JTA + Narayana)
 
-Транзакции выполняются программно через `ru.blps.googleplay.tx.TxExecutor` (без `@Transactional`).
+Транзакции выполняются через `ru.blps.googleplay.tx.TxExecutor`.
 Менеджер транзакций — Narayana (`org.jboss.narayana.jta:narayana-jta`), бин `JtaTransactionManager` в `ru.blps.googleplay.config.JtaNarayanaConfig`.
 
 ## Скрипты
-
 `scripts/curl-demo.sh` выполняет демонстрационный сценарий и автоматически логинится как `admin`.
 
